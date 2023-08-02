@@ -1,0 +1,113 @@
+[gd_scene load_steps=10 format=3 uid="uid://bmli0bmg2edyi"]
+
+[ext_resource type="Script" path="res://GameObjects/Card.gd" id="2_jxq6e"]
+[ext_resource type="AudioStream" uid="uid://bs7whuvw6mw8w" path="res://Sounds/card.mp3" id="2_p8bia"]
+[ext_resource type="Texture2D" uid="uid://crv0u502elmp6" path="res://Cards/Back.png" id="2_yunqh"]
+[ext_resource type="LabelSettings" uid="uid://dgxvjnaqhnijn" path="res://GameObjects/CardLabelRed.tres" id="3_lk7xp"]
+[ext_resource type="LabelSettings" uid="uid://dngngmy5ycps4" path="res://GameObjects/CardLabelBlack.tres" id="4_4yqxm"]
+
+[sub_resource type="Animation" id="Animation_6pt5x"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-0.12, 0.12)]
+}
+
+[sub_resource type="Animation" id="Animation_khbyg"]
+resource_name = "flip"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(2, 0.5, 0.5),
+"update": 0,
+"values": [Vector2(-0.12, 0.12), Vector2(1e-05, 0.12), Vector2(0.12, 0.12)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.2),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"flipCard"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_w0ths"]
+_data = {
+"RESET": SubResource("Animation_6pt5x"),
+"flip": SubResource("Animation_khbyg")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pxnhx"]
+size = Vector2(68, 200)
+
+[node name="Card" type="Node2D" node_paths=PackedStringArray("valueLabel1", "valueLabel2", "sprite", "animationPlayer", "audioPlayer")]
+script = ExtResource("2_jxq6e")
+valueLabel1 = NodePath("Sprite2D/Label")
+valueLabel2 = NodePath("Sprite2D/Label2")
+sprite = NodePath("Sprite2D")
+animationPlayer = NodePath("AnimationPlayer")
+audioPlayer = NodePath("AudioStreamPlayer")
+positionOffset = Vector2(0, 34)
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_p8bia")
+volume_db = -15.237
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 6
+scale = Vector2(-0.12, 0.12)
+texture = ExtResource("2_yunqh")
+
+[node name="Label" type="Label" parent="Sprite2D"]
+visible = false
+offset_left = -516.667
+offset_top = -841.667
+offset_right = -280.667
+offset_bottom = -475.667
+text = "A"
+label_settings = ExtResource("3_lk7xp")
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="Sprite2D"]
+visible = false
+offset_left = 525.0
+offset_top = 841.667
+offset_right = 774.0
+offset_bottom = 1207.67
+rotation = 3.14159
+text = "10"
+label_settings = ExtResource("4_4yqxm")
+horizontal_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_w0ths")
+}
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(1.00152, 1)
+shape = SubResource("RectangleShape2D_pxnhx")
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_mouse_exited"]

@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://i3pn7fc11e6x"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_6hv1w"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_g4hwd"]
+
+[node name="Person" type="Node3D"]
+transform = Transform3D(2.022, 0, 0, 0, 2.022, 0, 0, 0, 2.022, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.474813, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_6hv1w")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.358671, 0, 0, 0, 0.287467, 0, 0, 0, 0.372811, 0, 0.485481, 0)
+mesh = SubResource("BoxMesh_6hv1w")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.358671, 0, 0, 0, 0.443399, 0, 0, 0, 0.372812, 0.255985, 0.877541, 0)
+mesh = SubResource("BoxMesh_6hv1w")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.748664, 0, 0, 0, 0.740533, 0, 0, 0, 0.778179, 0.12154, 1.08958, 0)
+mesh = SubResource("SphereMesh_g4hwd")
