@@ -62,7 +62,9 @@ const avatars = [
 	preload("res://Avatars/Slide.png"),
 	preload("res://Avatars/Patrick.png"),
 	preload("res://Avatars/Bidoof.png"),
-	preload("res://Avatars/Lola.png")
+	preload("res://Avatars/Lola.png"),
+	preload("res://Avatars/Piratux.png"),
+	preload("res://Avatars/Bob.png")
 	]
 const avatar_names = [
 	"David", 
@@ -72,7 +74,9 @@ const avatar_names = [
 	"Ronald",
 	"Patrick",
 	"Rui",
-	"Lola"
+	"Lola",
+	"Oswald",
+	"Bob"
 	]
 
 var player_list_item = preload("res://GameObjects/PlayerList.tscn")
@@ -80,7 +84,7 @@ var player_icon = preload("res://GameObjects/Player.tscn")
 
 class LocalPlayer:
 	var nickname : String = ""
-	var avatar_id : int = 0
+	var avatar_id : String = ""
 	var id : int = -1
 	var bet = 0
 	var money = 1000
@@ -101,13 +105,24 @@ func l(text):
 		#_text_console.text += text + "\n"
 	print(text)
 
-var avatar_id = 0
+var avatar_id = "0"
 
 func _avatar_chosen(idx):
-	_avatarImage.texture = avatars[idx]
-	avatar_id = idx
+	_avatarImage.texture = getAvatarFromId(idx)
+	avatar_id = str(idx)
 	
-func _ready():
+func _ready():	
+	discord_sdk.app_id = 1136670102213894224
+	l("Discord working: " + str(discord_sdk.get_is_discord_working()))
+	discord_sdk.details = "Doing the poker thing"
+	discord_sdk.state = "Waiting for a game"
+	discord_sdk.start_timestamp = int(Time.get_unix_time_from_system())
+	discord_sdk.current_party_size = 1
+	discord_sdk.max_party_size = 1
+	discord_sdk.is_public_party = false
+	discord_sdk.instanced = false
+	discord_sdk.match_secret = _ipAddressInput.text
+	print(discord_sdk.get_current_user())
 	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_peer_disconnected)
 	multiplayer.server_disconnected.connect(_server_disconnected)
@@ -116,8 +131,11 @@ func _ready():
 	_avatarPicker.get_popup().clear()
 	for i in avatars.size():
 		_avatarPicker.get_popup().add_icon_item(avatars[i], avatar_names[i])
+		_avatarPicker.get_popup().set_item_icon_max_width(i, 30)
 	_avatarImage.texture = avatars[0]
 	_avatarPicker.get_popup().index_pressed.connect(_avatar_chosen)
+	randomize()
+	_avatar_chosen(randi_range(0,avatars.size() - 1))
 	pass
 
 
@@ -146,6 +164,17 @@ func _on_host_pressed():
 	multiplayer.multiplayer_peer = peer;
 
 func _on_join_pressed():
+	discord_sdk.details = "Doing the poker thing"
+	discord_sdk.state = "Connected to a game"
+	discord_sdk.start_timestamp = int(Time.get_unix_time_from_system())
+	discord_sdk.party_id = "public"
+	discord_sdk.current_party_size = 1
+	discord_sdk.max_party_size = 100
+	discord_sdk.is_public_party = true
+	discord_sdk.instanced = true
+	discord_sdk.match_secret = _ipAddressInput.text
+	discord_sdk.join_secret = _ipAddressInput.text
+	discord_sdk.refresh()
 	var peer = WebSocketMultiplayerPeer.new()
 	peer.create_client(_ipAddressInput.text)
 	if peer.get_connection_status() == MultiplayerPeer.CONNECTION_DISCONNECTED:
@@ -153,6 +182,7 @@ func _on_join_pressed():
 		return
 	else:
 		l("JOINED ON LOCALHOST:7777")
+		
 		_multiplayerPanel.hide()
 		_lobby.show()
 	multiplayer.multiplayer_peer = peer
@@ -464,7 +494,7 @@ func PNickname(nickname, avatar_id):
 		l("PLAYER " + _table.players[indexPlayerByID(id)].nickname + " CHANGED NICKNAME TO " + nickname + "!")
 		var n = nickname.substr(0,min(nickname.length(), 10))
 		_table.players[indexPlayerByID(id)].nickname = n
-		_table.players[indexPlayerByID(id)].avatar_id = avatar_id
+		_table.players[indexPlayerByID(id)].avatar_id = str(avatar_id)
 		ServerUpdatePlayerList()
 		
 func testAction(id, action):
@@ -714,7 +744,7 @@ func UpdatePlayerList(ids, nicknames, avat, bets, money, blinds, turnId, pot, cu
 			if p.id == player_list[i].id:
 				p.found = true
 				fPlayer = true
-				p.updatePlayer(player_list[i].nickname, avatars[player_list[i].avatar_id], player_list[i].money, player_list[i].blind, player_list[i].bet, turnId == player_list[i].id, player_list[i].ready, player_list[i].folded)
+				p.updatePlayer(player_list[i].nickname, getAvatarFromId(player_list[i].avatar_id), player_list[i].money, player_list[i].blind, player_list[i].bet, turnId == player_list[i].id, player_list[i].ready, player_list[i].folded)
 				var offsetX = (1280)/(player_list.size()+1)
 				var totalOffsetX = offsetX*(i+1)
 				p.position = Vector2(totalOffsetX-100,0);
@@ -724,7 +754,7 @@ func UpdatePlayerList(ids, nicknames, avat, bets, money, blinds, turnId, pot, cu
 				break;
 		if (!fPlayer):
 			var pI : TextureRect = player_icon.instantiate()
-			pI.updatePlayer(player_list[i].nickname, avatars[player_list[i].avatar_id], player_list[i].money, player_list[i].blind,player_list[i].bet, turnId == player_list[i].id, player_list[i].ready, player_list[i].folded)
+			pI.updatePlayer(player_list[i].nickname, getAvatarFromId(player_list[i].avatar_id), player_list[i].money, player_list[i].blind,player_list[i].bet, turnId == player_list[i].id, player_list[i].ready, player_list[i].folded)
 			var offsetX = (1280)/(player_list.size()+1)
 			var totalOffsetX = offsetX*(i+1)
 			pI.position = Vector2(totalOffsetX-100,0);
@@ -735,7 +765,7 @@ func UpdatePlayerList(ids, nicknames, avat, bets, money, blinds, turnId, pot, cu
 			_playerIcons.add_child(pI)
 	if(mLocalPlayer != null):
 		_myPlayerIcon.show()
-		_myPlayerIcon.updatePlayer(mLocalPlayer.nickname, avatars[mLocalPlayer.avatar_id], mLocalPlayer.money, mLocalPlayer.blind, mLocalPlayer.bet, turnId == mLocalPlayer.id, mLocalPlayer.ready, mLocalPlayer.folded)
+		_myPlayerIcon.updatePlayer(mLocalPlayer.nickname, getAvatarFromId(mLocalPlayer.avatar_id), mLocalPlayer.money, mLocalPlayer.blind, mLocalPlayer.bet, turnId == mLocalPlayer.id, mLocalPlayer.ready, mLocalPlayer.folded)
 	_potLabel.text = "Pot: " + str(pot) + "$"
 	for i in range(_playerIcons.get_children().size()-1,-1,-1):
 		if(!_playerIcons.get_children()[i].found):
@@ -809,3 +839,48 @@ func _on_show_hands_pressed():
 	if(mLocalPlayer != null):
 		PShowHands.rpc_id(1)
 	pass # Replace with function body.
+
+var discord_user = null
+
+var avatar_dict = {}
+
+func getAvatarFromId(aid):
+	var sAid = str(aid)
+	if sAid.begins_with("https://"):
+		if (avatar_dict.has(sAid)):
+			return avatar_dict[sAid]
+		else:
+			var http_request = ImageRequest.new()
+			http_request.image_retrieved.connect(_image_retrieved)
+			add_child(http_request)
+			var http_error = http_request.request_image(sAid)
+			p_url = sAid
+			if http_error != OK:
+				print("An error occurred in the HTTP request.")
+			return avatars[0]
+	else:
+		return avatars[int(sAid)]
+
+var p_url = ""
+
+func _on_discord_pressed():
+	discord_user = discord_sdk.get_current_user()
+	if(discord_user.username != "" && discord_user.avatar_url != "https://cdn.discordapp.com/embed/avatars/1.png"):
+		_nickname.text = discord_user.username
+		p_url = discord_user.avatar_url
+		avatar_id = p_url
+		getAvatarFromId(p_url)
+	
+func updateAvatars(url):
+	if(avatar_id == url):
+		_avatarImage.texture = avatar_dict[url]
+		print("FOUND LOCAL DISCORD AVATAR")
+	for i in range(player_list.size()):
+		for p in _playerIcons.get_children():
+			if(player_list[i].id == p.id):
+				p.avatarTexture.texture = avatar_dict[url]
+				return
+	
+func _image_retrieved(texture, url):
+	avatar_dict.merge({url: texture})
+	updateAvatars(url)

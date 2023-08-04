@@ -481,7 +481,7 @@ class Card:
 
 class Player:
 	enum {NoBlind, BigBlind, SmallBlind, Dealer}
-	var avatar_id : int = 0
+	var avatar_id : String = "0"
 	var hand = []
 	var money = 1000
 	var bet = 0

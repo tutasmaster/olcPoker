@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://djbsxiltv41qk"]
+[gd_scene load_steps=23 format=3 uid="uid://djbsxiltv41qk"]
 
 [ext_resource type="Script" path="res://MultiplayerNode.gd" id="1_0addx"]
 [ext_resource type="Texture2D" uid="uid://bep5v6rj0awlr" path="res://new_table.png" id="1_3uev3"]
@@ -8,9 +8,11 @@
 [ext_resource type="Script" path="res://Poker.gd" id="6_qw8eu"]
 [ext_resource type="Texture2D" uid="uid://byrk24videdsv" path="res://Avatars/Cash.png" id="7_tsap7"]
 [ext_resource type="PackedScene" uid="uid://cp1ly1mqmwfdc" path="res://GameObjects/Player.tscn" id="7_xmc3h"]
+[ext_resource type="Theme" uid="uid://0pkasbsjplj3" path="res://default_theme.tres" id="8_b8ot7"]
 [ext_resource type="Script" path="res://TitleSequence.gd" id="8_xwwrw"]
 [ext_resource type="Texture2D" uid="uid://bk0fwf1kqg4je" path="res://Avatars/Bidoof.png" id="8_yn6fy"]
 [ext_resource type="Texture2D" uid="uid://baj77pjkb825x" path="res://Avatars/Javid.png" id="9_st1rn"]
+[ext_resource type="StyleBox" uid="uid://cb1vnfsq2bp8k" path="res://button_default.tres" id="10_ttfgp"]
 
 [sub_resource type="Gradient" id="Gradient_wl23a"]
 colors = PackedColorArray(0.321569, 0.117647, 0.14902, 1, 0.321569, 0.117647, 0.14902, 1)
@@ -97,6 +99,21 @@ shadow_size = 5
 shadow_color = Color(0, 0, 0, 1)
 shadow_offset = Vector2(5.175, 5.22)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o46n8"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.113725, 0.133333, 0.168627, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="LabelSettings" id="LabelSettings_2kq5r"]
 font_size = 51
 
@@ -125,7 +142,7 @@ _table = NodePath("../Table")
 _hostButton = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HOST")
 _networkPanel = NodePath("../Control/Panel/HBoxContainer/VBoxContainer")
 _multiplayerPanel = NodePath("../Control/Panel")
-_nickname = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/NICKNAME")
+_nickname = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3/NICKNAME")
 _player_list = NodePath("../Control/Panel2/ScrollContainer/VBoxContainer/HBoxContainer")
 _lobby = NodePath("../Control/Panel2")
 _clientControls = NodePath("../Control/Control")
@@ -140,7 +157,7 @@ _raiseSlider = NodePath("../Control/Control/VBoxContainer2/HBoxContainer4/HSlide
 _playControls = NodePath("../Control/Control/VBoxContainer2")
 _potLabel = NodePath("../Control/Control/Label")
 _ipAddressInput = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
-_avatarPicker = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2/PanelContainer/MenuButton")
+_avatarPicker = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/PanelContainer/MenuButton")
 _avatarImage = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2/TextureRect")
 _callButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/CALL")
 _foldButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer2/FOLD")
@@ -211,16 +228,16 @@ scale = Vector2(0.75, 0.75)
 [node name="TextureRect2" parent="Node2D" instance=ExtResource("7_xmc3h")]
 visible = false
 offset_left = 1080.0
-offset_top = 520.0
+offset_top = 522.0
 offset_right = 1279.0
-offset_bottom = 718.0
+offset_bottom = 720.0
 
 [node name="Card" parent="Node2D/TextureRect2" index="4"]
-position = Vector2(-18.936, 161.37)
+position = Vector2(-23.9362, 161.37)
 positionOffset = Vector2(0, -34)
 
 [node name="Card2" parent="Node2D/TextureRect2" index="5"]
-position = Vector2(-65.6111, 161.37)
+position = Vector2(-70.6111, 161.37)
 positionOffset = Vector2(0, -34)
 
 [node name="Control" type="Control" parent="."]
@@ -231,6 +248,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("8_b8ot7")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Control" node_paths=PackedStringArray("label", "subLabel")]
 libraries = {
@@ -241,19 +259,23 @@ label = NodePath("Label")
 subLabel = NodePath("Label2")
 
 [node name="Label" type="Label" parent="Control/AnimationPlayer"]
+z_index = 2
 offset_left = 1281.0
 offset_top = 313.0
 offset_right = 2561.0
 offset_bottom = 427.0
+theme = ExtResource("8_b8ot7")
 text = "Player"
 label_settings = SubResource("LabelSettings_h6ct4")
 horizontal_alignment = 1
 
 [node name="Label2" type="Label" parent="Control/AnimationPlayer"]
+z_index = 2
 offset_left = -1280.0
 offset_top = 427.0
 offset_right = -0.000488281
 offset_bottom = 541.0
+theme = ExtResource("8_b8ot7")
 text = "Full House"
 label_settings = SubResource("LabelSettings_l104a")
 horizontal_alignment = 1
@@ -262,9 +284,12 @@ horizontal_alignment = 1
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_right = 1280.0
-offset_bottom = 198.0
+offset_left = 507.63
+offset_top = 150.0
+offset_right = 772.74
+offset_bottom = 536.0
 grow_horizontal = 2
+theme = ExtResource("8_b8ot7")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/Panel"]
 layout_mode = 1
@@ -273,34 +298,32 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="TextEdit" type="TextEdit" parent="Control/Panel/HBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 editable = false
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+theme = ExtResource("8_b8ot7")
+theme_override_styles/panel = ExtResource("10_ttfgp")
 
-[node name="TextureRect" type="TextureRect" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-texture = ExtResource("8_yn6fy")
-expand_mode = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2"]
+[node name="MenuButton" type="MenuButton" parent="Control/Panel/HBoxContainer/VBoxContainer/PanelContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="MenuButton" type="MenuButton" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2/PanelContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
+theme_type_variation = &"test"
 text = "AVATAR"
 item_count = 4
 popup/item_0/text = "Bidoof"
@@ -316,42 +339,70 @@ popup/item_3/text = "Javid2"
 popup/item_3/icon = ExtResource("9_st1rn")
 popup/item_3/id = 3
 
-[node name="NICKNAME" type="LineEdit" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
+
+[node name="TextureRect" type="TextureRect" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+theme = ExtResource("8_b8ot7")
+texture = ExtResource("8_yn6fy")
+expand_mode = 2
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("8_b8ot7")
+alignment = 1
+
+[node name="NICKNAME" type="LineEdit" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 text = "Player"
 placeholder_text = "Nickname"
 
+[node name="JOIN2" type="Button" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+theme = ExtResource("8_b8ot7")
+text = "DISCORD"
+
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 
 [node name="LineEdit" type="LineEdit" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 text = "localhost:7777"
 placeholder_text = "IPAddress:Port"
 
 [node name="JOIN" type="Button" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 text = "JOIN"
 
 [node name="HOST" type="Button" parent="Control/Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 text = "HOST"
 
 [node name="Panel2" type="Panel" parent="Control"]
-visible = false
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 1078.0
+offset_left = 1075.0
 offset_top = 274.0
-offset_right = 1281.0
+offset_right = 1278.0
 offset_bottom = 525.0
 grow_horizontal = 2
 grow_vertical = 0
+theme = ExtResource("8_b8ot7")
+theme_override_styles/panel = SubResource("StyleBoxFlat_o46n8")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Control/Panel2"]
 layout_mode = 1
@@ -360,21 +411,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("8_b8ot7")
 horizontal_scroll_mode = 0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel2/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 
 [node name="HBoxContainer" type="VBoxContainer" parent="Control/Panel2/ScrollContainer/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
+alignment = 1
 
 [node name="Button" type="Button" parent="Control/Panel2/ScrollContainer/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 text = "READY"
 
 [node name="Button2" type="Button" parent="Control/Panel2/ScrollContainer/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 text = "SHOW HANDS"
 
 [node name="Control" type="Control" parent="Control"]
@@ -382,6 +439,7 @@ visible = false
 anchors_preset = 0
 offset_right = 1280.0
 offset_bottom = 720.0
+theme = ExtResource("8_b8ot7")
 
 [node name="Label" type="Label" parent="Control/Control"]
 layout_mode = 2
@@ -389,6 +447,7 @@ offset_left = 19.0
 offset_top = 646.0
 offset_right = 1299.0
 offset_bottom = 719.0
+theme = ExtResource("8_b8ot7")
 text = "0"
 label_settings = SubResource("LabelSettings_2kq5r")
 vertical_alignment = 1
@@ -402,20 +461,24 @@ offset_top = 5.0
 offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("8_b8ot7")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/Control/VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="HBoxContainer2" type="VBoxContainer" parent="Control/Control/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="TextureRect5" type="TextureRect" parent="Control/Control/VBoxContainer/HBoxContainer/HBoxContainer2"]
 visible = false
 z_index = -3
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 texture = ExtResource("7_tsap7")
 stretch_mode = 3
 flip_h = true
@@ -423,6 +486,7 @@ flip_h = true
 [node name="HBoxContainer3" type="HBoxContainer" parent="Control/Control/VBoxContainer/HBoxContainer"]
 visible = false
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="Control/Control"]
@@ -438,51 +502,62 @@ offset_right = 131.045
 offset_bottom = -7.85999
 grow_horizontal = 2
 grow_vertical = 0
+theme = ExtResource("8_b8ot7")
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="Label" type="Label" parent="Control/Control/VBoxContainer2/HBoxContainer3"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 text = "0$"
 
 [node name="HBoxContainer4" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 
 [node name="HSlider" type="HSlider" parent="Control/Control/VBoxContainer2/HBoxContainer4"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
+theme = ExtResource("8_b8ot7")
 max_value = 1000.0
 value = 1.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="CALL" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 text = "CALL"
 
 [node name="CHECK" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 text = "CHECK"
 
 [node name="RAISE" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 text = "RAISE"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
 layout_mode = 2
+theme = ExtResource("8_b8ot7")
 alignment = 1
 
 [node name="FOLD" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("8_b8ot7")
 text = "FOLD"
 
 [node name="Control2" type="Control" parent="Control"]
@@ -490,7 +565,9 @@ visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+theme = ExtResource("8_b8ot7")
 
+[connection signal="pressed" from="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3/JOIN2" to="MultiplayerNode" method="_on_discord_pressed"]
 [connection signal="pressed" from="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer/JOIN" to="MultiplayerNode" method="_on_join_pressed"]
 [connection signal="pressed" from="Control/Panel/HBoxContainer/VBoxContainer/HOST" to="MultiplayerNode" method="_on_host_pressed"]
 [connection signal="pressed" from="Control/Panel2/ScrollContainer/VBoxContainer/Button" to="MultiplayerNode" method="_on_ready_pressed"]
