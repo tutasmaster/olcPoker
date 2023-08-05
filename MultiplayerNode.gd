@@ -17,7 +17,7 @@ extends Node2D
 @export var _titleSequence: AnimationPlayer
 @export var _raiseLabel: Label
 @export var _raiseSlider: HSlider
-@export var _playControls: VBoxContainer
+@export var _playControls: Control
 @export var _potLabel: Label
 @export var _ipAddressInput: LineEdit
 @export var _avatarPicker: MenuButton
@@ -1051,11 +1051,14 @@ func updateAvatars(url):
 	if(avatar_id == url):
 		_avatarImage.texture = avatar_dict[url]
 		print("FOUND LOCAL DISCORD AVATAR")
+		return
 	for i in range(player_list.size()):
-		for p in _playerIcons.get_children():
-			if(player_list[i].id == p.id):
-				p.avatarTexture.texture = avatar_dict[url]
-				return
+		if(player_list[i].avatar_id == url):
+			for p in _playerIcons.get_children():
+				if(player_list[i].id == p.id):
+					p.avatarTexture.texture = avatar_dict[url]
+					break
+		break
 	
 func _image_retrieved(texture, url):
 	avatar_dict.merge({url: texture})

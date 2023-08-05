@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://djbsxiltv41qk"]
+[gd_scene load_steps=33 format=3 uid="uid://djbsxiltv41qk"]
 
 [ext_resource type="Script" path="res://MultiplayerNode.gd" id="1_0addx"]
 [ext_resource type="Texture2D" uid="uid://bep5v6rj0awlr" path="res://new_table.png" id="1_3uev3"]
@@ -15,6 +15,7 @@
 [ext_resource type="StyleBox" uid="uid://cb1vnfsq2bp8k" path="res://button_default.tres" id="10_ttfgp"]
 [ext_resource type="StyleBox" uid="uid://b7dx5ai7i6l3r" path="res://text.tres" id="13_rdfts"]
 [ext_resource type="Script" path="res://Chat.gd" id="14_t5qbl"]
+[ext_resource type="StyleBox" uid="uid://8o0xps0blob3" path="res://panel_yellow.tres" id="15_itjlv"]
 [ext_resource type="StyleBox" uid="uid://b6ebn6l3bcfmr" path="res://button_default_circle.tres" id="16_ajg56"]
 [ext_resource type="StyleBox" uid="uid://cd4cxyt4t8ge5" path="res://button_click_circle.tres" id="17_boiu2"]
 
@@ -106,6 +107,8 @@ shadow_offset = Vector2(5.175, 5.22)
 [sub_resource type="LabelSettings" id="LabelSettings_2kq5r"]
 font_size = 51
 
+[sub_resource type="LabelSettings" id="LabelSettings_pt8go"]
+
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_4oyte"]
 number_color = Color(1, 1, 1, 1)
 symbol_color = Color(1, 1, 1, 1)
@@ -119,6 +122,21 @@ keyword_colors = {
 "joined": Color(0.262745, 1, 0.980392, 1),
 "left": Color(0.262745, 1, 0.980392, 1),
 "raised": Color(0.968627, 0.901961, 0, 1)
+}
+
+[sub_resource type="Animation" id="Animation_p05uh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Notification/Panel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 721)]
 }
 
 [sub_resource type="Animation" id="Animation_t3aty"]
@@ -135,21 +153,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
 "values": [Vector2(1, 721), Vector2(1, 676), Vector2(1, 676), Vector2(1, 721)]
-}
-
-[sub_resource type="Animation" id="Animation_p05uh"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Notification/Panel:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 721)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_uxlo5"]
@@ -208,18 +211,18 @@ _hand = [NodePath("../Node2D/TextureRect2/Card"), NodePath("../Node2D/TextureRec
 _playerIcons = NodePath("../Node2D/PlayerList")
 _myPlayerIcon = NodePath("../Node2D/TextureRect2")
 _titleSequence = NodePath("../Control/AnimationPlayer")
-_raiseLabel = NodePath("../Control/Control/VBoxContainer2/HBoxContainer3/Label")
-_raiseSlider = NodePath("../Control/Control/VBoxContainer2/HBoxContainer4/HSlider")
-_playControls = NodePath("../Control/Control/VBoxContainer2")
+_raiseLabel = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer3/PanelContainer/Label")
+_raiseSlider = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer4/HSlider")
+_playControls = NodePath("../Control/Control/Controls")
 _potLabel = NodePath("../Control/Control/Label")
 _ipAddressInput = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
 _avatarPicker = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/PanelContainer/MenuButton")
 _avatarImage = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer2/TextureRect")
-_callButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/CALL")
-_foldButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer2/FOLD")
-_checkButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/CHECK")
-_raiseButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/RAISE")
-_raiseBar = NodePath("../Control/Control/VBoxContainer2/HBoxContainer4")
+_callButton = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer/CALL")
+_foldButton = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer2/FOLD")
+_checkButton = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer/CHECK")
+_raiseButton = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer/RAISE")
+_raiseBar = NodePath("../Control/Control/Controls/VBoxContainer2/HBoxContainer4")
 _noisePlayer = NodePath("AudioStreamPlayer")
 _chatWindow = NodePath("../Control/CHAT")
 _chatBox = NodePath("../Control/CHAT/VBoxContainer/CHAT_TEXT")
@@ -509,6 +512,7 @@ offset_bottom = 720.0
 theme = ExtResource("8_b8ot7")
 
 [node name="Label" type="Label" parent="Control/Control"]
+modulate = Color(1, 1, 1, 0.792157)
 layout_mode = 2
 offset_top = 278.0
 offset_right = 1280.0
@@ -520,6 +524,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Control"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -556,36 +561,40 @@ layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="Control/Control"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -131.045
-offset_top = -123.86
-offset_right = 131.045
-offset_bottom = -7.85999
-grow_horizontal = 2
-grow_vertical = 0
+[node name="Controls" type="PanelContainer" parent="Control/Control"]
+layout_mode = 2
+offset_left = 508.0
+offset_top = 593.0
+offset_right = 773.0
+offset_bottom = 697.0
+theme = ExtResource("8_b8ot7")
+theme_override_styles/panel = ExtResource("15_itjlv")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/Control/Controls"]
+layout_mode = 2
 theme = ExtResource("8_b8ot7")
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/Control/Controls/VBoxContainer2"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="Label" type="Label" parent="Control/Control/VBoxContainer2/HBoxContainer3"]
+[node name="PanelContainer" type="PanelContainer" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer3"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer3/PanelContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 text = "0$"
+label_settings = SubResource("LabelSettings_pt8go")
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="HBoxContainer4" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
+[node name="HBoxContainer4" type="HBoxContainer" parent="Control/Control/Controls/VBoxContainer2"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 
-[node name="HSlider" type="HSlider" parent="Control/Control/VBoxContainer2/HBoxContainer4"]
+[node name="HSlider" type="HSlider" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer4"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -593,42 +602,41 @@ theme = ExtResource("8_b8ot7")
 max_value = 1000.0
 value = 1.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/Control/Controls/VBoxContainer2"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="CALL" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer"]
+[node name="CALL" type="Button" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 text = "CALL"
 
-[node name="CHECK" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer"]
+[node name="CHECK" type="Button" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 text = "CHECK"
 
-[node name="RAISE" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer"]
+[node name="RAISE" type="Button" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 text = "RAISE"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Control/Control/VBoxContainer2"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/Control/Controls/VBoxContainer2"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="FOLD" type="Button" parent="Control/Control/VBoxContainer2/HBoxContainer2"]
+[node name="FOLD" type="Button" parent="Control/Control/Controls/VBoxContainer2/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 text = "FOLD"
 
 [node name="Control2" type="Control" parent="Control"]
-visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -771,11 +779,11 @@ vertical_alignment = 1
 [connection signal="pressed" from="Control/Join Panel/HBoxContainer/VBoxContainer/HOST" to="MultiplayerNode" method="_on_host_pressed"]
 [connection signal="pressed" from="Control/Lobby/Button" to="MultiplayerNode" method="_on_ready_pressed"]
 [connection signal="pressed" from="Control/Lobby/Button2" to="MultiplayerNode" method="_on_show_hands_pressed"]
-[connection signal="value_changed" from="Control/Control/VBoxContainer2/HBoxContainer4/HSlider" to="MultiplayerNode" method="_on_bet_slider_value_changed"]
-[connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer/CALL" to="MultiplayerNode" method="_on_call_pressed"]
-[connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer/CHECK" to="MultiplayerNode" method="_on_check_pressed"]
-[connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer/RAISE" to="MultiplayerNode" method="_on_bet_pressed"]
-[connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer2/FOLD" to="MultiplayerNode" method="_on_fold_pressed"]
+[connection signal="value_changed" from="Control/Control/Controls/VBoxContainer2/HBoxContainer4/HSlider" to="MultiplayerNode" method="_on_bet_slider_value_changed"]
+[connection signal="pressed" from="Control/Control/Controls/VBoxContainer2/HBoxContainer/CALL" to="MultiplayerNode" method="_on_call_pressed"]
+[connection signal="pressed" from="Control/Control/Controls/VBoxContainer2/HBoxContainer/CHECK" to="MultiplayerNode" method="_on_check_pressed"]
+[connection signal="pressed" from="Control/Control/Controls/VBoxContainer2/HBoxContainer/RAISE" to="MultiplayerNode" method="_on_bet_pressed"]
+[connection signal="pressed" from="Control/Control/Controls/VBoxContainer2/HBoxContainer2/FOLD" to="MultiplayerNode" method="_on_fold_pressed"]
 [connection signal="sendMessage" from="Control/CHAT/VBoxContainer/HBoxContainer/CHAT_TEXTFIELD" to="MultiplayerNode" method="_on_chat_send_pressed"]
 [connection signal="pressed" from="Control/CHAT/VBoxContainer/HBoxContainer/CHAT_SEND" to="MultiplayerNode" method="_on_chat_send_pressed"]
 [connection signal="pressed" from="Control/Server Panel/PanelContainer/VBoxContainer/Button" to="MultiplayerNode" method="_on_skip_turn_pressed"]
