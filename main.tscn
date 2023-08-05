@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://djbsxiltv41qk"]
+[gd_scene load_steps=31 format=3 uid="uid://djbsxiltv41qk"]
 
 [ext_resource type="Script" path="res://MultiplayerNode.gd" id="1_0addx"]
 [ext_resource type="Texture2D" uid="uid://bep5v6rj0awlr" path="res://new_table.png" id="1_3uev3"]
@@ -13,6 +13,10 @@
 [ext_resource type="Texture2D" uid="uid://bk0fwf1kqg4je" path="res://Avatars/Bidoof.png" id="8_yn6fy"]
 [ext_resource type="Texture2D" uid="uid://baj77pjkb825x" path="res://Avatars/Javid.png" id="9_st1rn"]
 [ext_resource type="StyleBox" uid="uid://cb1vnfsq2bp8k" path="res://button_default.tres" id="10_ttfgp"]
+[ext_resource type="StyleBox" uid="uid://b7dx5ai7i6l3r" path="res://text.tres" id="13_rdfts"]
+[ext_resource type="Script" path="res://Chat.gd" id="14_t5qbl"]
+[ext_resource type="StyleBox" uid="uid://b6ebn6l3bcfmr" path="res://button_default_circle.tres" id="16_ajg56"]
+[ext_resource type="StyleBox" uid="uid://cd4cxyt4t8ge5" path="res://button_click_circle.tres" id="17_boiu2"]
 
 [sub_resource type="Gradient" id="Gradient_wl23a"]
 colors = PackedColorArray(0.321569, 0.117647, 0.14902, 1, 0.321569, 0.117647, 0.14902, 1)
@@ -99,23 +103,75 @@ shadow_size = 5
 shadow_color = Color(0, 0, 0, 1)
 shadow_offset = Vector2(5.175, 5.22)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o46n8"]
-content_margin_left = 2.0
-content_margin_top = 2.0
-content_margin_right = 2.0
-content_margin_bottom = 2.0
-bg_color = Color(0.113725, 0.133333, 0.168627, 1)
+[sub_resource type="LabelSettings" id="LabelSettings_2kq5r"]
+font_size = 51
+
+[sub_resource type="CodeHighlighter" id="CodeHighlighter_4oyte"]
+number_color = Color(1, 1, 1, 1)
+symbol_color = Color(1, 1, 1, 1)
+function_color = Color(1, 1, 1, 1)
+member_variable_color = Color(1, 1, 1, 1)
+keyword_colors = {
+"bet": Color(0.968627, 0.901961, 0, 1),
+"calls": Color(0.968627, 0.901961, 0, 1),
+"checks": Color(0.968627, 0.901961, 0, 1),
+"folded": Color(0.968627, 0.901961, 0, 1),
+"joined": Color(0.262745, 1, 0.980392, 1),
+"left": Color(0.262745, 1, 0.980392, 1),
+"raised": Color(0.968627, 0.901961, 0, 1)
+}
+
+[sub_resource type="Animation" id="Animation_t3aty"]
+resource_name = "popup"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Notification/Panel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 2.7, 3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 721), Vector2(1, 676), Vector2(1, 676), Vector2(1, 721)]
+}
+
+[sub_resource type="Animation" id="Animation_p05uh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Notification/Panel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 721)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_uxlo5"]
+_data = {
+"RESET": SubResource("Animation_p05uh"),
+"popup": SubResource("Animation_t3aty")
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ec0g"]
+bg_color = Color(0.180392, 0.258824, 0.462745, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
-
-[sub_resource type="LabelSettings" id="LabelSettings_2kq5r"]
-font_size = 51
+shadow_color = Color(0, 0, 0, 0.231373)
+shadow_size = 2
+shadow_offset = Vector2(2, 2)
 
 [node name="Node2D2" type="Node2D"]
 
@@ -133,18 +189,18 @@ texture = ExtResource("1_3uev3")
 [node name="Table" type="Node2D" parent="."]
 script = ExtResource("6_qw8eu")
 
-[node name="MultiplayerNode" type="Node2D" parent="." node_paths=PackedStringArray("_text_console", "_table", "_hostButton", "_networkPanel", "_multiplayerPanel", "_nickname", "_player_list", "_lobby", "_clientControls", "_assets", "_flop", "_hand", "_playerIcons", "_myPlayerIcon", "_titleSequence", "_raiseLabel", "_raiseSlider", "_playControls", "_potLabel", "_ipAddressInput", "_avatarPicker", "_avatarImage", "_callButton", "_foldButton", "_checkButton", "_raiseButton", "_raiseBar", "_noisePlayer")]
-position = Vector2(2, 0)
+[node name="MultiplayerNode" type="Node2D" parent="." node_paths=PackedStringArray("_text_console", "_table", "_hostButton", "_networkPanel", "_multiplayerPanel", "_nickname", "_player_list", "_lobby", "_clientControls", "_assets", "_flop", "_hand", "_playerIcons", "_myPlayerIcon", "_titleSequence", "_raiseLabel", "_raiseSlider", "_playControls", "_potLabel", "_ipAddressInput", "_avatarPicker", "_avatarImage", "_callButton", "_foldButton", "_checkButton", "_raiseButton", "_raiseBar", "_noisePlayer", "_chatWindow", "_chatBox", "_messageBox", "_showHandsButton", "_notification", "_notificationLabel", "_muteButton", "_hostPanel")]
+position = Vector2(4, 0)
 rotation = 0.000507139
 script = ExtResource("1_0addx")
-_text_console = NodePath("../Control/Panel/HBoxContainer/TextEdit")
+_text_console = NodePath("../Control/Join Panel/HBoxContainer/TextEdit")
 _table = NodePath("../Table")
-_hostButton = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HOST")
-_networkPanel = NodePath("../Control/Panel/HBoxContainer/VBoxContainer")
-_multiplayerPanel = NodePath("../Control/Panel")
-_nickname = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3/NICKNAME")
-_player_list = NodePath("../Control/Panel2/ScrollContainer/VBoxContainer/HBoxContainer")
-_lobby = NodePath("../Control/Panel2")
+_hostButton = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/HOST")
+_networkPanel = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer")
+_multiplayerPanel = NodePath("../Control/Join Panel")
+_nickname = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer3/NICKNAME")
+_player_list = NodePath("../Control/Lobby/Panel2/ScrollContainer/VBoxContainer/HBoxContainer")
+_lobby = NodePath("../Control/Lobby")
 _clientControls = NodePath("../Control/Control")
 _assets = NodePath("../Node2D")
 _flop = [NodePath("../Node2D/FLOP_1"), NodePath("../Node2D/FLOP_2"), NodePath("../Node2D/FLOP_3"), NodePath("../Node2D/FLOP_4"), NodePath("../Node2D/FLOP_5")]
@@ -156,15 +212,23 @@ _raiseLabel = NodePath("../Control/Control/VBoxContainer2/HBoxContainer3/Label")
 _raiseSlider = NodePath("../Control/Control/VBoxContainer2/HBoxContainer4/HSlider")
 _playControls = NodePath("../Control/Control/VBoxContainer2")
 _potLabel = NodePath("../Control/Control/Label")
-_ipAddressInput = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
-_avatarPicker = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/PanelContainer/MenuButton")
-_avatarImage = NodePath("../Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2/TextureRect")
+_ipAddressInput = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
+_avatarPicker = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/PanelContainer/MenuButton")
+_avatarImage = NodePath("../Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer2/TextureRect")
 _callButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/CALL")
 _foldButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer2/FOLD")
 _checkButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/CHECK")
 _raiseButton = NodePath("../Control/Control/VBoxContainer2/HBoxContainer/RAISE")
 _raiseBar = NodePath("../Control/Control/VBoxContainer2/HBoxContainer4")
 _noisePlayer = NodePath("AudioStreamPlayer")
+_chatWindow = NodePath("../Control/CHAT")
+_chatBox = NodePath("../Control/CHAT/VBoxContainer/CHAT_TEXT")
+_messageBox = NodePath("../Control/CHAT/VBoxContainer/HBoxContainer/CHAT_TEXTFIELD")
+_showHandsButton = NodePath("../Control/Lobby/Button2")
+_notification = NodePath("../Notification")
+_notificationLabel = NodePath("../Notification/Panel/Label")
+_muteButton = NodePath("../Control/MUTE")
+_hostPanel = NodePath("../Control/Server Panel")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="MultiplayerNode"]
 stream = ExtResource("4_smp3r")
@@ -233,11 +297,15 @@ offset_right = 1279.0
 offset_bottom = 720.0
 
 [node name="Card" parent="Node2D/TextureRect2" index="4"]
-position = Vector2(-23.9362, 161.37)
+position = Vector2(-43.0001, 127)
+scale = Vector2(0.7, 0.7)
+scaleMultiplier = Vector2(1.5, 1.5)
 positionOffset = Vector2(0, -34)
 
 [node name="Card2" parent="Node2D/TextureRect2" index="5"]
-position = Vector2(-70.6111, 161.37)
+position = Vector2(-134, 127)
+scale = Vector2(0.7, 0.7)
+scaleMultiplier = Vector2(1.5, 1.5)
 positionOffset = Vector2(0, -34)
 
 [node name="Control" type="Control" parent="."]
@@ -280,7 +348,7 @@ text = "Full House"
 label_settings = SubResource("LabelSettings_l104a")
 horizontal_alignment = 1
 
-[node name="Panel" type="Panel" parent="Control"]
+[node name="Join Panel" type="Panel" parent="Control"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -291,7 +359,7 @@ offset_bottom = 536.0
 grow_horizontal = 2
 theme = ExtResource("8_b8ot7")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/Panel"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/Join Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -301,25 +369,25 @@ grow_vertical = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="TextEdit" type="TextEdit" parent="Control/Panel/HBoxContainer"]
+[node name="TextEdit" type="TextEdit" parent="Control/Join Panel/HBoxContainer"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 editable = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Join Panel/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="Control/Join Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 theme_override_styles/panel = ExtResource("10_ttfgp")
 
-[node name="MenuButton" type="MenuButton" parent="Control/Panel/HBoxContainer/VBoxContainer/PanelContainer"]
+[node name="MenuButton" type="MenuButton" parent="Control/Join Panel/HBoxContainer/VBoxContainer/PanelContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
@@ -339,72 +407,70 @@ popup/item_3/text = "Javid2"
 popup/item_3/icon = ExtResource("9_st1rn")
 popup/item_3/id = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/Join Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 
-[node name="TextureRect" type="TextureRect" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer2"]
+[node name="TextureRect" type="TextureRect" parent="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 texture = ExtResource("8_yn6fy")
 expand_mode = 2
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/Join Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="NICKNAME" type="LineEdit" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3"]
+[node name="NICKNAME" type="LineEdit" parent="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 text = "Player"
 placeholder_text = "Nickname"
 
-[node name="JOIN2" type="Button" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3"]
+[node name="JOIN2" type="Button" parent="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 text = "DISCORD"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/Join Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 
-[node name="LineEdit" type="LineEdit" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 text = "localhost:7777"
 placeholder_text = "IPAddress:Port"
 
-[node name="JOIN" type="Button" parent="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="JOIN" type="Button" parent="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 text = "JOIN"
 
-[node name="HOST" type="Button" parent="Control/Panel/HBoxContainer/VBoxContainer"]
+[node name="HOST" type="Button" parent="Control/Join Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 text = "HOST"
 
-[node name="Panel2" type="Panel" parent="Control"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
+[node name="Lobby" type="VBoxContainer" parent="Control"]
+visible = false
+layout_mode = 0
 offset_left = 1075.0
 offset_top = 274.0
 offset_right = 1278.0
 offset_bottom = 525.0
-grow_horizontal = 2
-grow_vertical = 0
-theme = ExtResource("8_b8ot7")
-theme_override_styles/panel = SubResource("StyleBoxFlat_o46n8")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Control/Panel2"]
+[node name="Panel2" type="Panel" parent="Control/Lobby"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("8_b8ot7")
+theme_override_styles/panel = ExtResource("13_rdfts")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Control/Lobby/Panel2"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -414,22 +480,23 @@ grow_vertical = 2
 theme = ExtResource("8_b8ot7")
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel2/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Lobby/Panel2/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("8_b8ot7")
 
-[node name="HBoxContainer" type="VBoxContainer" parent="Control/Panel2/ScrollContainer/VBoxContainer"]
+[node name="HBoxContainer" type="VBoxContainer" parent="Control/Lobby/Panel2/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 alignment = 1
 
-[node name="Button" type="Button" parent="Control/Panel2/ScrollContainer/VBoxContainer"]
+[node name="Button" type="Button" parent="Control/Lobby"]
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 text = "READY"
 
-[node name="Button2" type="Button" parent="Control/Panel2/ScrollContainer/VBoxContainer"]
+[node name="Button2" type="Button" parent="Control/Lobby"]
+visible = false
 layout_mode = 2
 theme = ExtResource("8_b8ot7")
 text = "SHOW HANDS"
@@ -443,13 +510,13 @@ theme = ExtResource("8_b8ot7")
 
 [node name="Label" type="Label" parent="Control/Control"]
 layout_mode = 2
-offset_left = 19.0
-offset_top = 646.0
-offset_right = 1299.0
-offset_bottom = 719.0
+offset_top = 278.0
+offset_right = 1280.0
+offset_bottom = 351.0
 theme = ExtResource("8_b8ot7")
 text = "0"
 label_settings = SubResource("LabelSettings_2kq5r")
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Control"]
@@ -567,15 +634,154 @@ offset_right = 40.0
 offset_bottom = 40.0
 theme = ExtResource("8_b8ot7")
 
-[connection signal="pressed" from="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer3/JOIN2" to="MultiplayerNode" method="_on_discord_pressed"]
-[connection signal="pressed" from="Control/Panel/HBoxContainer/VBoxContainer/HBoxContainer/JOIN" to="MultiplayerNode" method="_on_join_pressed"]
-[connection signal="pressed" from="Control/Panel/HBoxContainer/VBoxContainer/HOST" to="MultiplayerNode" method="_on_host_pressed"]
-[connection signal="pressed" from="Control/Panel2/ScrollContainer/VBoxContainer/Button" to="MultiplayerNode" method="_on_ready_pressed"]
-[connection signal="pressed" from="Control/Panel2/ScrollContainer/VBoxContainer/Button2" to="MultiplayerNode" method="_on_show_hands_pressed"]
+[node name="CHAT" type="Control" parent="Control"]
+visible = false
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 278.0
+offset_right = 229.0
+offset_bottom = 638.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CHAT"]
+layout_mode = 2
+offset_left = 5.0
+offset_top = 2.0
+offset_right = 220.0
+offset_bottom = 358.0
+
+[node name="CHAT_TEXT" type="TextEdit" parent="Control/CHAT/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+editable = false
+wrap_mode = 1
+syntax_highlighter = SubResource("CodeHighlighter_4oyte")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/CHAT/VBoxContainer"]
+layout_mode = 2
+
+[node name="CHAT_TEXTFIELD" type="LineEdit" parent="Control/CHAT/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "MESSAGE"
+script = ExtResource("14_t5qbl")
+
+[node name="CHAT_SEND" type="Button" parent="Control/CHAT/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "SEND"
+
+[node name="BoxContainer" type="BoxContainer" parent="Control/CHAT/VBoxContainer"]
+layout_mode = 2
+
+[node name="Server Panel" type="Control" parent="Control"]
+visible = false
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/Server Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -146.0
+offset_top = -13.5
+offset_right = 146.0
+offset_bottom = 13.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Server Panel/PanelContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Control/Server Panel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Skip Turn"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/Server Panel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Button2" type="Button" parent="Control/Server Panel/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "End Round"
+
+[node name="Button3" type="Button" parent="Control/Server Panel/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Reset Currency"
+
+[node name="MUTE" type="Button" parent="Control"]
+layout_mode = 2
+offset_left = 49.0
+offset_top = 8.0
+offset_right = 85.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = ExtResource("16_ajg56")
+theme_override_styles/hover = ExtResource("16_ajg56")
+theme_override_styles/pressed = ExtResource("17_boiu2")
+theme_override_styles/disabled = ExtResource("16_ajg56")
+theme_override_styles/focus = ExtResource("16_ajg56")
+text = "🔇"
+icon_alignment = 1
+
+[node name="STOP" type="Button" parent="Control"]
+layout_mode = 2
+offset_left = 5.0
+offset_top = 8.0
+offset_right = 41.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = ExtResource("16_ajg56")
+theme_override_styles/hover = ExtResource("16_ajg56")
+theme_override_styles/pressed = ExtResource("17_boiu2")
+theme_override_styles/disabled = ExtResource("16_ajg56")
+theme_override_styles/focus = ExtResource("16_ajg56")
+text = "🛑"
+icon_alignment = 1
+
+[node name="Notification" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_uxlo5")
+}
+
+[node name="Panel" type="Panel" parent="Notification"]
+offset_left = 1.0
+offset_top = 721.0
+offset_right = 182.0
+offset_bottom = 763.0
+theme = ExtResource("8_b8ot7")
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ec0g")
+
+[node name="Label" type="Label" parent="Notification/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "YOUR TURN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer3/JOIN2" to="MultiplayerNode" method="_on_discord_pressed"]
+[connection signal="pressed" from="Control/Join Panel/HBoxContainer/VBoxContainer/HBoxContainer/JOIN" to="MultiplayerNode" method="_on_join_pressed"]
+[connection signal="pressed" from="Control/Join Panel/HBoxContainer/VBoxContainer/HOST" to="MultiplayerNode" method="_on_host_pressed"]
+[connection signal="pressed" from="Control/Lobby/Button" to="MultiplayerNode" method="_on_ready_pressed"]
+[connection signal="pressed" from="Control/Lobby/Button2" to="MultiplayerNode" method="_on_show_hands_pressed"]
 [connection signal="value_changed" from="Control/Control/VBoxContainer2/HBoxContainer4/HSlider" to="MultiplayerNode" method="_on_bet_slider_value_changed"]
 [connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer/CALL" to="MultiplayerNode" method="_on_call_pressed"]
 [connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer/CHECK" to="MultiplayerNode" method="_on_check_pressed"]
 [connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer/RAISE" to="MultiplayerNode" method="_on_bet_pressed"]
 [connection signal="pressed" from="Control/Control/VBoxContainer2/HBoxContainer2/FOLD" to="MultiplayerNode" method="_on_fold_pressed"]
+[connection signal="sendMessage" from="Control/CHAT/VBoxContainer/HBoxContainer/CHAT_TEXTFIELD" to="MultiplayerNode" method="_on_chat_send_pressed"]
+[connection signal="pressed" from="Control/CHAT/VBoxContainer/HBoxContainer/CHAT_SEND" to="MultiplayerNode" method="_on_chat_send_pressed"]
+[connection signal="pressed" from="Control/Server Panel/PanelContainer/VBoxContainer/Button" to="MultiplayerNode" method="_on_skip_turn_pressed"]
+[connection signal="pressed" from="Control/Server Panel/PanelContainer/VBoxContainer/HBoxContainer/Button2" to="MultiplayerNode" method="_on_end_round_pressed"]
+[connection signal="pressed" from="Control/Server Panel/PanelContainer/VBoxContainer/HBoxContainer/Button3" to="MultiplayerNode" method="_on_currency_reset_pressed"]
+[connection signal="pressed" from="Control/MUTE" to="MultiplayerNode" method="_on_mute_pressed"]
+[connection signal="pressed" from="Control/STOP" to="MultiplayerNode" method="_on_stop_pressed"]
 
 [editable path="Node2D/TextureRect2"]

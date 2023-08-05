@@ -7,7 +7,7 @@ extends Node2D
 @export var _multiplayerPanel: Control
 @export var _nickname : LineEdit
 @export var _player_list : VBoxContainer
-@export var _lobby: Panel
+@export var _lobby: Control
 @export var _clientControls: Control
 @export var _assets: Node2D
 @export var _flop: Array[Node2D]
@@ -28,6 +28,16 @@ extends Node2D
 @export var _raiseButton: Button
 @export var _raiseBar: HBoxContainer
 @export var _noisePlayer: AudioStreamPlayer
+@export var _chatWindow: Control
+@export var _chatBox: TextEdit
+@export var _messageBox: LineEdit
+@export var _showHandsButton: Button
+@export var _notification: AnimationPlayer
+@export var _notificationLabel: Label
+@export var _muteButton: Button
+@export var _hostPanel: Control
+
+var mute = false
 
 
 const _audio_check = preload("res://Sounds/check.mp3")
@@ -41,17 +51,91 @@ const _audio_ready = [
 const _audio_fold = preload("res://Sounds/fold.mp3")
 const _audio_raise = preload("res://Sounds/raise.mp3")
 const _audio_call = preload("res://Sounds/call.mp3")
+const _audio_notify = preload("res://Sounds/notify.mp3")
+
+const _versionID = "1.0.0"
+
+var _playerData = {}
+
+@rpc("reliable")
+func notify(text):
+	_noisePlayer.pitch_scale = 1
+	_noisePlayer.stream = _audio_notify
+	if(!mute):
+		_noisePlayer.play()
+	_notification.stop()
+	_notificationLabel.text = text
+	_notification.play("popup")
+
+func saveData():
+	var save_dict = {
+		"nickname" : _nickname.text,
+		"ip" : _ipAddressInput.text,
+		"mute": mute
+	}
+	var save_game = FileAccess.open("user://savegame.save", FileAccess.WRITE)
+	var json_string = JSON.stringify(save_dict)
+	save_game.store_line(json_string)
+	
+func saveRoom():
+	var save_game = FileAccess.open("user://room.json", FileAccess.WRITE)
+	var json_string = JSON.stringify(_playerData)
+	save_game.store_line(json_string)
+	
+func getSavedData(player):
+	if(_playerData.has(player)):
+		return _playerData[player]
+	return 1000
+	
+func updateRoom():
+	for p in _table.players:
+		_playerData[p.nickname] = p.money
+	
+func loadData():
+	if not FileAccess.file_exists("user://savegame.save"):
+		return
+	var save_game = FileAccess.open("user://savegame.save", FileAccess.READ)
+	while save_game.get_position() < save_game.get_length():
+		var json_string = save_game.get_line()
+		var json = JSON.new()
+		var parse_result = json.parse(json_string)
+		if parse_result != OK:
+			l("Failed to load savefile.")
+			continue
+		var data = json.get_data()
+		if(data.has("ip")):
+			_ipAddressInput.text = data["ip"]
+		if(data.has("nickname")):
+			_nickname.text = data["nickname"]
+		if(data.has("muted")):
+			if mute != data["muted"]:
+				_on_mute_pressed()
+		
+func loadRoom():
+	if not FileAccess.file_exists("user://room.json"):
+		return
+	var save_game = FileAccess.open("user://room.json", FileAccess.READ)
+	while save_game.get_position() < save_game.get_length():
+		var json_string = save_game.get_line()
+		var json = JSON.new()
+		var parse_result = json.parse(json_string)
+		if parse_result != OK:
+			l("Failed to load savefile.")
+			continue
+		_playerData = json.get_data()
 
 func playReadySound():
 	_noisePlayer.pitch_scale = randf_range(0.85, 1.15)
 	_noisePlayer.stream = _audio_ready[randi_range(0, _audio_ready.size()-1)]
-	_noisePlayer.play()
+	if(!mute):
+		_noisePlayer.play()
 	pass
 
 func playSound(audio):
 	_noisePlayer.pitch_scale = randf_range(0.85, 1.15)
 	_noisePlayer.stream = audio
-	_noisePlayer.play()
+	if(!mute):
+		_noisePlayer.play()
 	pass
 
 const avatars = [
@@ -69,9 +153,9 @@ const avatars = [
 const avatar_names = [
 	"David", 
 	"Matthew", 
-	"Let", 
+	"Ronald", 
 	"Catarina", 
-	"Ronald",
+	"Kyle",
 	"Patrick",
 	"Rui",
 	"Lola",
@@ -83,6 +167,7 @@ var player_list_item = preload("res://GameObjects/PlayerList.tscn")
 var player_icon = preload("res://GameObjects/Player.tscn")
 
 class LocalPlayer:
+	var version_number : String = ""
 	var nickname : String = ""
 	var avatar_id : String = ""
 	var id : int = -1
@@ -112,6 +197,7 @@ func _avatar_chosen(idx):
 	avatar_id = str(idx)
 	
 func _ready():	
+	loadData()
 	discord_sdk.app_id = 1136670102213894224
 	l("Discord working: " + str(discord_sdk.get_is_discord_working()))
 	discord_sdk.details = "Doing the poker thing"
@@ -143,16 +229,17 @@ func _process(delta):
 	pass
 
 func start_game():
+	ingame = true
 	_table.startGame()
 	updateHands()
 	ServerUpdatePlayerList()
 	PStartGame.rpc()
 	_table.currentPlayer = -1
 	onTurn()
-	ingame = true
 	pass
 
 func _on_host_pressed():
+	loadRoom()
 	var peer = WebSocketMultiplayerPeer.new()
 	peer.create_server(7777);
 	if peer.get_connection_status() == MultiplayerPeer.CONNECTION_DISCONNECTED:
@@ -160,10 +247,14 @@ func _on_host_pressed():
 		return
 	else:
 		l("HOSTING ON PORT 7777")
+		_multiplayerPanel.hide()
+		_hostPanel.show()
 	_networkPanel.hide()
 	multiplayer.multiplayer_peer = peer;
+	_table.currentPlayer = -1
 
 func _on_join_pressed():
+	saveData()
 	discord_sdk.details = "Doing the poker thing"
 	discord_sdk.state = "Connected to a game"
 	discord_sdk.start_timestamp = int(Time.get_unix_time_from_system())
@@ -185,6 +276,7 @@ func _on_join_pressed():
 		
 		_multiplayerPanel.hide()
 		_lobby.show()
+		_chatWindow.show()
 	multiplayer.multiplayer_peer = peer
 
 func _on_ready_pressed():
@@ -205,11 +297,39 @@ func end_game(winner = null, rank = ""):
 				_table.players.remove_at(i)
 			else:
 				_table.players[i].ready = false
+	if(winner != null):
+		var txt = ""
+		var otherTxt = ""
+		for i in range(winner.size()):
+			if(getAnyTablePlayerById(winner[i]) == null):
+				continue
+			if i != 0:
+				txt += "and "
+			txt += getAnyTablePlayerById(winner[i]).nickname + " "
+			otherTxt = rank
+		if(winner.size() == 1):
+			txt += "WINS"
+		else:
+			txt += "WIN"
+		PChat.rpc("👑" + txt)
+		PChat.rpc("👑" + rank)
 	PEndGame.rpc(winner, rank)
+	if(winner != null):
+		for id in winner:
+			var p = getAnyTablePlayerById(id)
+			if(p != null):
+				ShowHands.rpc(p.id, _table.cHand(p.hand))
 	for p in _table.players:
 		if p.money == 0:
-			multiplayer.multiplayer_peer.disconnect_peer(p.id)
+			PChat.rpc("💀" + p.nickname + " ran out of money.\nBuying back in with 1000$.")
+			notify.rpc_id(p.id, "You lost!")
+			p.money = 1000
+			#multiplayer.multiplayer_peer.disconnect_peer(p.id)
+	_table.currentPlayer = -1
+	updateRoom()
 	ServerUpdatePlayerList()
+	saveRoom()
+	
 	
 @rpc("reliable")
 func PEndGame(winner, rank):
@@ -266,8 +386,8 @@ func ready():
 		PReady.rpc()
 		l(str(id) + " is ready.")
 		if(checkReady()):
-			l("EVERYONE IS READY!")
 			setUnready()
+			l("EVERYONE IS READY!")
 			start_game()
 
 func onTurn():
@@ -279,14 +399,17 @@ func onTurn():
 			_table.drawTable()
 			_table.drawTable()
 			updateTable.rpc(_table.cHand(_table.table))		
+			PChat.rpc(_table.cHand(_table.table))
 			_table.currentPlayer = 0
 		elif(_table.table.size() == 3):
 			_table.drawTable()
 			updateTable.rpc(_table.cHand(_table.table))		
+			PChat.rpc(_table.cHand(_table.table))
 			_table.currentPlayer = 0
 		elif(_table.table.size() == 4):
 			_table.drawTable()
 			updateTable.rpc(_table.cHand(_table.table))		
+			PChat.rpc(_table.cHand(_table.table))
 			_table.currentPlayer = 0
 		else:
 			l("DECLARING A WINNER")
@@ -327,6 +450,8 @@ func onTurn():
 	
 	if(!currentPlayer().disconnected && _table.getValidActions(currentPlayer()).size() == 1):
 		PCheck(currentPlayer().id)
+		if(currentPlayer() != null):
+			currentPlayer().played = true
 		onTurn()
 		return
 	
@@ -335,6 +460,7 @@ func onTurn():
 		onTurn()
 	else:
 		setTurn.rpc(currentPlayer().id)
+		PChat.rpc_id(currentPlayer().id, "Your turn!")
 		setYourTurn.rpc_id(
 			currentPlayer().id, 
 			_table.calculateCash(currentPlayer()), 
@@ -402,7 +528,7 @@ var player_queue = [];
 func _peer_connected(id):
 	if(id == 1):
 		l("HOST CONNECTION DETECTED!")
-		PNickname.rpc_id(1,_nickname.text, avatar_id)
+		PNickname.rpc_id(1,_nickname.text, avatar_id, _versionID)
 		return
 	if(multiplayer.is_server()):
 		var player = _table.Player.new()
@@ -424,16 +550,20 @@ var myID = -1
 func _peer_disconnected(id):
 	if(multiplayer.is_server()):
 		for i in range(player_queue.size()-1,-1,-1):
-				if player_queue[i].disconnected:
-					player_queue.remove_at(i)
+			if player_queue[i].disconnected:
+				player_queue.remove_at(i)
 		_table.players[indexPlayerByID(id)].disconnected = true
+		
 		if(!ingame):
 			for i in range(_table.players.size()-1,-1,-1):
 				if _table.players[i].disconnected:
+					PChat.rpc("🚩" + _table.players[i].nickname + " has left the table.")
 					_table.players.remove_at(i)
 			ServerUpdatePlayerList()
 		else:
 			if(currentPlayer != null):
+				PChat.rpc("🚩" + currentPlayer().nickname + " has left the table.")
+			
 				if(currentPlayer().id == id):
 					onTurn()
 				else:
@@ -480,21 +610,47 @@ func ServerUpdatePlayerList():
 	else:
 		UpdatePlayerList.rpc(ids,nicknames,avatars,bids,money,blinds,-1,_table.pot, _table.currentBet, readys, folded )
 
+func nicknameExists(n):
+	for p in _table.players:
+		if p.nickname == n:
+			return true
+	for p in player_queue:
+		if p.nickname == n:
+			return true
+	return false
+
+func validateNickname(n):
+	var n1 = n.substr(0,min(n.length(), 10))
+	if nicknameExists(n1):
+		var i = 1
+		var n2 = n1 + " (" + str(i) + ")"
+		while(nicknameExists(n2)):
+			n2 = n1 + " (" + str(i) + ")"
+			i+=1
+		return n2
+	return n1
+			
+
 @rpc("any_peer","reliable")
-func PNickname(nickname, avatar_id):
+func PNickname(nickname, avatar_id, version_id = null):
 	var id = multiplayer.get_remote_sender_id()
 	if(multiplayer.is_server()):
+		if(version_id == null || version_id != _versionID):
+			multiplayer.multiplayer_peer.disconnect_peer(id)
+			l("ETERNIE IS BREAKING MY GAME AGAIN!")
 		for p in player_queue:
 			if(p.id == id):
-				var n = nickname.substr(0,min(nickname.length(), 10))
-				l("QUEUED PLAYER " + p.nickname + " CHANGED NICKNAME TO " + n + "!")
-				p.nickname = n
+				p.nickname = validateNickname(nickname)
 				p.avatar_id = avatar_id
+				p.money = getSavedData(p.nickname)
+				PChat.rpc("🏳" + p.nickname + " is waiting to join the table.")
+				l("QUEUED PLAYER " + p.nickname + " CHANGED NICKNAME!")
 				return
-		l("PLAYER " + _table.players[indexPlayerByID(id)].nickname + " CHANGED NICKNAME TO " + nickname + "!")
-		var n = nickname.substr(0,min(nickname.length(), 10))
-		_table.players[indexPlayerByID(id)].nickname = n
+		l("PLAYER " + _table.players[indexPlayerByID(id)].nickname + " CHANGED NICKNAME!")
+		_table.players[indexPlayerByID(id)].nickname = validateNickname(nickname)
 		_table.players[indexPlayerByID(id)].avatar_id = str(avatar_id)
+		_table.players[indexPlayerByID(id)].money = getSavedData(_table.players[indexPlayerByID(id)].nickname)
+		PChat.rpc("🏳" + _table.players[indexPlayerByID(id)].nickname + " has joined the table.")
 		ServerUpdatePlayerList()
 		
 func testAction(id, action):
@@ -516,6 +672,7 @@ func PCall(pID):
 		if testAction(id, _table.PLAYER_ACTIONS.CALL):
 			_table.pCall(currentPlayer())
 			l("PLAYER " + str(id) + " HAS CALLED!")
+			PChat.rpc(getAnyTablePlayerById(id).nickname + " calls.")
 			PCall.rpc(id)
 			onTurn()
 		else:
@@ -525,8 +682,10 @@ func PCall(pID):
 		playSound(_audio_call)
 		
 @rpc("any_peer","reliable")
-func PCheck(pID):
+func PCheck(pID, forcepID = null):
 	var id = multiplayer.get_remote_sender_id()
+	if(forcepID != null):
+		id = forcepID
 	if(multiplayer.is_server()):
 		if(currentPlayer() == null):
 			return
@@ -536,6 +695,7 @@ func PCheck(pID):
 		if testAction(id, _table.PLAYER_ACTIONS.CHECK):
 			_table.pCheck(currentPlayer())
 			l("PLAYER " + str(id) + " HAS CHECKED!")
+			PChat.rpc(getAnyTablePlayerById(id).nickname + " checks.")
 			PCheck.rpc(id)
 			onTurn()
 		else:
@@ -549,8 +709,10 @@ func PReady():
 	playReadySound()
 
 @rpc("any_peer","reliable")
-func PFold(pID):
+func PFold(pID, forcepID = null):
 	var id = multiplayer.get_remote_sender_id()
+	if(forcepID != null):
+		id = forcepID
 	if(multiplayer.is_server()):
 		if(currentPlayer() == null):
 			return
@@ -561,6 +723,7 @@ func PFold(pID):
 			_table.pFold(currentPlayer())
 			l("PLAYER " + str(id) + " HAS FOLDED!")
 			PFold.rpc(id)
+			PChat.rpc(getAnyTablePlayerById(id).nickname + " folded.")
 			onTurn()
 		else:
 			l("PLAYER " + str(id) + " HAS TRIED TO FOLD BUT IT WASN'T AVAILABLE.")
@@ -584,14 +747,16 @@ func PBet(pID, value):
 			_table.pBet(currentPlayer(), value)
 			l("PLAYER " + str(id) + " HAS BET!")
 			PBet.rpc(id, value)
+			PChat.rpc(getAnyTablePlayerById(id).nickname + " raised by " + str(value) + "$.")
 			onTurn()
 		else:
 			l("PLAYER " + str(id) + " HAS TRIED TO BET BUT IT WASN'T AVAILABLE.")
 	else:
 		l("PLAYER " + str(pID) + " HAS BET!")
-		_titleSequence.announce("RAISED TO " + str(value) + "$")
+		_titleSequence.announce("RAISED BY " + str(value) + "$")
 		_noisePlayer.stream = _audio_raise
-		_noisePlayer.play()
+		if(!mute):
+			_noisePlayer.play()
 
 func getLocalPlayerByID(id):
 	if(mLocalPlayer != null):
@@ -626,7 +791,7 @@ func setYourTurn(money, bet, actions):
 	_raiseSlider.min_value = 1
 	_raiseSlider.step = 1
 	_raiseSlider.value = 25
-	_raiseSlider.max_value = mLocalPlayer.money
+	_raiseSlider.max_value = mLocalPlayer.money - currentBet
 	
 	
 	if(isAction(actions,_table.PLAYER_ACTIONS.CALL)):
@@ -653,9 +818,12 @@ func setYourTurn(money, bet, actions):
 		_foldButton.hide()
 	
 	_playControls.show()
+	notify("Your turn!")
+	DisplayServer.window_request_attention()
 
 @rpc("reliable")
 func updateHand(hand, money, bet):
+	_showHandsButton.show()
 	_lobby.hide()
 	_clientControls.show()
 	_assets.show()
@@ -766,12 +934,19 @@ func UpdatePlayerList(ids, nicknames, avat, bets, money, blinds, turnId, pot, cu
 	if(mLocalPlayer != null):
 		_myPlayerIcon.show()
 		_myPlayerIcon.updatePlayer(mLocalPlayer.nickname, getAvatarFromId(mLocalPlayer.avatar_id), mLocalPlayer.money, mLocalPlayer.blind, mLocalPlayer.bet, turnId == mLocalPlayer.id, mLocalPlayer.ready, mLocalPlayer.folded)
-	_potLabel.text = "Pot: " + str(pot) + "$"
+	_potLabel.text = str(pot) + "$"
 	for i in range(_playerIcons.get_children().size()-1,-1,-1):
 		if(!_playerIcons.get_children()[i].found):
 			var p = _playerIcons.get_children()[i]
 			_playerIcons.remove_child(p)	
 			p.queue_free()
+			
+	
+	for p in _playerIcons.get_children():
+		for c in p.cards:
+			c.muted = mute
+	for c in _myPlayerIcon.cards:
+		c.muted = mute
 	
 	
 func _on_call_pressed():
@@ -817,9 +992,10 @@ func ShowHands(id, hand):
 		if p.id == id:
 			p.showCards(parseHand(hand))
 			break
-	if (id == mLocalPlayer.id):
-		for i in range(client_hand.size()):
-			_hand[i].updateCard(client_hand[i].suit, _table.cValue(client_hand[i].value))
+	if(mLocalPlayer != null):
+		if (id == mLocalPlayer.id):
+			for i in range(client_hand.size()):
+				_hand[i].updateCard(client_hand[i].suit, _table.cValue(client_hand[i].value))
 
 @rpc("any_peer","reliable")
 func PShowHands():
@@ -865,7 +1041,7 @@ var p_url = ""
 
 func _on_discord_pressed():
 	discord_user = discord_sdk.get_current_user()
-	if(discord_user.username != "" && discord_user.avatar_url != "https://cdn.discordapp.com/embed/avatars/1.png"):
+	if(discord_user.username != "<null>" && discord_user.username != "" && discord_user.avatar_url != "https://cdn.discordapp.com/embed/avatars/1.png"):
 		_nickname.text = discord_user.username
 		p_url = discord_user.avatar_url
 		avatar_id = p_url
@@ -884,3 +1060,86 @@ func updateAvatars(url):
 func _image_retrieved(texture, url):
 	avatar_dict.merge({url: texture})
 	updateAvatars(url)
+
+func getAnyTablePlayerById(id):
+	for p in _table.players:
+		if p.id == id:
+			return p
+	for p in player_queue:
+		if p.id == id:
+			return p
+	return null
+	
+@rpc("reliable")
+func ServerChat(txt):
+	if(_chatBox.text != ""):
+		_chatBox.text += "\n"
+	_chatBox.text += txt 
+	_chatBox.scroll_vertical = INF
+
+@rpc("any_peer","reliable")
+func PChat(text):
+	var id = multiplayer.get_remote_sender_id()
+	if (multiplayer.is_server()):
+		var p = getAnyTablePlayerById(id)
+		if(p != null):
+			PChat.rpc("<" + p.nickname + "> " + text)
+		return
+		
+	if(_chatBox.text != ""):
+		_chatBox.text += "\n"
+	_chatBox.text += text 
+	_chatBox.scroll_vertical = INF
+
+func _on_chat_send_pressed():
+	var txt = _messageBox.text
+	_messageBox.text = ""
+	if(txt != ""):
+		PChat.rpc_id(1,txt)
+	pass
+
+
+func _on_mute_pressed():
+	mute = !mute
+	if mute:
+		_muteButton.text = "🔊"
+	else:
+		_muteButton.text = "🔇"
+		
+	for p in _playerIcons.get_children():
+		for c in p.cards:
+			c.muted = mute
+	for c in _myPlayerIcon.cards:
+		c.muted = mute
+
+
+func _on_stop_pressed():
+	if multiplayer.multiplayer_peer != null:
+		multiplayer.multiplayer_peer.disconnect_peer(1)
+	multiplayer.multiplayer_peer = null
+	get_tree().reload_current_scene()
+
+
+func _on_skip_turn_pressed():
+	if(ingame):
+		if(testAction(currentPlayer().id,_table.PLAYER_ACTIONS.CHECK)):
+			return PCheck(null, currentPlayer().id)
+		if(testAction(currentPlayer().id,_table.PLAYER_ACTIONS.FOLD)):
+			return PFold(null, currentPlayer().id)
+
+
+func _on_currency_reset_pressed():
+	if(!ingame):
+		_playerData = {}
+		saveRoom()
+		for p in _table.players:
+			p.money = 1000
+		ServerUpdatePlayerList()
+	pass
+
+
+func _on_end_round_pressed():
+	if(ingame):
+		for p in _table.players:
+			p.bet = 0
+		end_game(null, null)

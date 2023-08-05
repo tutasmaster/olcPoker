@@ -324,8 +324,6 @@ func getValidPlayersPlayed():
 	return count;
 
 func checkFlop():	
-	if(getValidPlayers() <= 1):
-		return true;
 	for p in players:
 		#They must either be all in, with the bet amount, folded, disconnected, or folded
 		if(p.disconnected || p.folded):
@@ -350,7 +348,7 @@ func drawTable():
 
 
 func startGame():
-	players.shuffle()
+	players.push_front(players.pop_back())
 	resetDeck()
 	shuffleDeck()
 	startMatch()
@@ -417,6 +415,8 @@ func getValidActions(p : Player):
 	if(countInvalidPeople() == players.size() - 1 && p.bet == currentBet):
 		return [PLAYER_ACTIONS.CHECK]
 	if(p.bet < currentBet && currentBet == findBiggestRaise(p.id)):
+		return [PLAYER_ACTIONS.FOLD, PLAYER_ACTIONS.CALL]
+	if(p.bet < currentBet && p.money <= currentBet):
 		return [PLAYER_ACTIONS.FOLD, PLAYER_ACTIONS.CALL]
 	if(p.bet < currentBet):
 		return [PLAYER_ACTIONS.FOLD, PLAYER_ACTIONS.CALL, PLAYER_ACTIONS.BET]

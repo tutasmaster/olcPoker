@@ -1,0 +1,23 @@
+[gd_resource type="StyleBoxFlat" format=3 uid="uid://b6ebn6l3bcfmr"]
+
+[resource]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.180392, 0.258824, 0.462745, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_blend = true
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+expand_margin_left = 2.0
+expand_margin_top = 4.0
+expand_margin_right = 2.0
+shadow_color = Color(0.32549, 0.121569, 0.160784, 0.6)
+shadow_size = 3
+shadow_offset = Vector2(1, 1.225)

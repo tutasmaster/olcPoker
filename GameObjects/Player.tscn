@@ -14,13 +14,16 @@
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("3_68dma")
-}, {
-"duration": 1.0,
 "texture": ExtResource("5_lgbpa")
 }, {
 "duration": 1.0,
+"texture": ExtResource("3_68dma")
+}, {
+"duration": 1.0,
 "texture": ExtResource("6_g3b1i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_68dma")
 }],
 "loop": true,
 "name": &"default",
@@ -52,6 +55,7 @@ betLabel = NodePath("HBoxContainer/VBoxContainer/PanelContainer/Label")
 readyImage = NodePath("TextureRect3")
 
 [node name="TextureRect3" type="TextureRect" parent="."]
+visible = false
 layout_mode = 0
 offset_right = 199.0
 offset_bottom = 198.0
@@ -59,11 +63,11 @@ texture = ExtResource("3_5xaey")
 
 [node name="TextureRect2" type="AnimatedSprite2D" parent="."]
 visible = false
-z_index = -1
+modulate = Color(1, 1, 1, 0.545098)
 texture_filter = 4
 position = Vector2(100, 98)
 sprite_frames = SubResource("SpriteFrames_tr7hv")
-frame_progress = 0.21387
+frame_progress = 0.800191
 
 [node name="Panel2" type="Panel" parent="."]
 visible = false

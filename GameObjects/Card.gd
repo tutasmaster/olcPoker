@@ -54,13 +54,17 @@ func showCard(s,v):
 	valueLabel2.show()
 	
 func hideCard():
+	animationPlayer.stop()
 	updateCard(4,"")
+
+var muted = false
 
 func updateCard(s,v):
 	suit = s
 	value = v
 	animationPlayer.play("flip")
-	audioPlayer.play()
+	if(!muted):
+		audioPlayer.play()
 
 func _process(delta):
 	pass
